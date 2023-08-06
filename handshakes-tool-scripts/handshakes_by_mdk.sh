@@ -38,7 +38,7 @@ do
 	dri_num=$(airmon-ng|awk '/Driver/''{for(i=1; i<=NF; i++){print i " => " $i;}}'|grep "Driver"|awk '{print $1}')
 	if_driver=$(airmon-ng|awk -v iface_num=${iface_num} -v if_name=${if_name} '{if($iface_num==if_name) {print $0}}'|awk -v dri_num=${dri_num} '{print $dri_num}')
 	if_usb_id=$(cut -b 5-14 < "/sys/class/net/${if_name}/device/modalias" | sed 's/^.//;s/p/:/'|awk '{print tolower($1)}')
-	if_chipest=$(lsusb|awk -v if_usb_id=${if_usb_id} '{if ($6==if_usb_id) {print $0}}'|awk '{for (i=7;i<=NF;i++) printf("%s ", $i); print ""}')
+	if_chipest=$(lsusb|awk -v if_usb_id=${if_usb_id} '{if ($6==if_usb_id) {print $0}}'|head -n 1|awk '{for (i=7;i<=NF;i++) printf("%s ", $i); print ""}')
 	#if_suport_band=
 	echo -e "${i}., ${if_name}, driver: ${if_driver} chipest: ${if_chipest}" >> ${work_dir}/interface_list.txt
 	let i++
