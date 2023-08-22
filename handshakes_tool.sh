@@ -74,8 +74,8 @@ ${color_2}▞▀▖▀▛▘▀▛▘▞▀▖▞▀▖▌ ▌▛▀▘▛▀▖
 ▙▄▌ ▌  ▌ ▙▄▌▌  ▙▞ ▙▄ ▙▄▘   ▌ ▌               ▙▄▌ ▌  ▌ ▙▄▌▌  ▙▞ ▙▄ ▙▄▘   ▌ ▌
 ▌ ▌ ▌  ▌ ▌ ▌▌ ▖▌▝▖▌  ▌▚    ▌▚▘               ▌ ▌ ▌  ▌ ▌ ▌▌ ▖▌▝▖▌  ▌▚    ▌▚▘
 ▘ ▘ ▘  ▘ ▘ ▘▝▀ ▘ ▘▀▀▘▘ ▘▀▀▀▝▘▘               ▘ ▘ ▘  ▘ ▘ ▘▝▀ ▘ ▘▀▀▘▘ ▘▀▀▀▝▘▘${RST}
-                            ${color_3}~=:by QianSong1:=~${RST}
-                     > ${color_4}\033[4mhttps://github.com/QianSong1${RST} <
+                            ${color_3}~=:by XxxxXxxx1:=~${RST}
+                     > ${color_4}\033[4mhttps://github.com/XxxxXxxx1${RST} <
 
 """
 
