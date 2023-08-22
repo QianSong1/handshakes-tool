@@ -22,40 +22,80 @@ fi
 #===========================================================================================================================================
 #=====================                                            print app info                                 ===========================
 #===========================================================================================================================================
-clear
-echo -e "\033[35mWMWMWMWMWMWMWMWMWMWMWMWMWMWMWWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *\033[0m"
-sleep 0.1
-echo -e "\033[31m              *      *\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *\033[0m"
-sleep 0.1
-echo -e "\033[31m                    **********************************************\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *                                                *\033[0m"
-sleep 0.1
-echo -e "\033[32m< JJ 18 CM >\033[0m     \033[31m*                                           *******\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *                                                *\033[0m"
-sleep 0.1
-echo -e "\033[31m                    **********************************************\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *\033[0m"
-sleep 0.1
-echo -e "\033[31m              *      *\033[0m"
-sleep 0.1
-echo -e "\033[31m                 *\033[0m"
-sleep 0.1
-echo -e "\033[35mWMWMWMWMWMWMWMWMWMWMWMWMWMWMWWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM\033[0m"
-sleep 0.1
+function logo() {
 
-#print process info
+# print fuo zhu png
+cat <<EOF
+
+                                  _oo0oo_
+                                 088888880
+                                 88" . "88
+                                 (| -_- |)
+                                  0\ = /0
+                               ___/'---'\___
+                             .' \\\\|     |// '.
+                            / \\\\|||  :  |||// \\
+                           /_ ||||| -:- |||||- \\
+                          |   | \\\\\\  -  /// |   |
+                          | \_|  ''\---/''  |_/ |
+                          \  .-\__  '-'  __/-.  /
+                        ___'. .'  /--.--\  '. .'___
+                     ."" '<  '.___\_<|>_/___.' >'  "".
+                    | | : '-  \'.;'\ _ /';.'/ - ' : | |
+                    \  \ '_.   \_ __\ /__ _/   .-' /  /
+                ====='-.____'.___ \_____/___.-'____.-'=====
+                                  '=---='
+
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        佛祖保佑    iii    永不BUG
+
+EOF
+}
+
+function print_app_info() {
+
+# ding yi color vars
+local color_1='\033[1;30m'
+local color_2='\033[1;31m'
+local color_3='\033[1;32m'
+local color_4='\033[1;34m'
+local color_5='\033[1;35m'
+local color_6='\033[1;36m'
+local color_7='\033[1;33m'
+local color_8='\033[1;37m'
+local RST='\033[0m'
+
+# print first jpg
+clear
+# zifu hua shen cheng  fang fa: toilet -f smblock -t 'ATTACKER_Q               ATTACKER_Q'
+# an zhuang zi fu hua  tool: apt install toilet
+echo -e """
+${color_2}▞▀▖▀▛▘▀▛▘▞▀▖▞▀▖▌ ▌▛▀▘▛▀▖   ▞▀▖               ▞▀▖▀▛▘▀▛▘▞▀▖▞▀▖▌ ▌▛▀▘▛▀▖   ▞▀▖
+▙▄▌ ▌  ▌ ▙▄▌▌  ▙▞ ▙▄ ▙▄▘   ▌ ▌               ▙▄▌ ▌  ▌ ▙▄▌▌  ▙▞ ▙▄ ▙▄▘   ▌ ▌
+▌ ▌ ▌  ▌ ▌ ▌▌ ▖▌▝▖▌  ▌▚    ▌▚▘               ▌ ▌ ▌  ▌ ▌ ▌▌ ▖▌▝▖▌  ▌▚    ▌▚▘
+▘ ▘ ▘  ▘ ▘ ▘▝▀ ▘ ▘▀▀▘▘ ▘▀▀▀▝▘▘               ▘ ▘ ▘  ▘ ▘ ▘▝▀ ▘ ▘▀▀▘▘ ▘▀▀▀▝▘▘${RST}
+                            ${color_3}~=:by QianSong1:=~${RST}
+                     > ${color_4}\033[4mhttps://github.com/QianSong1${RST} <
+
+"""
+
+# loop print fuo zhu png
+IFS=$'\n'
+for i in $(logo)
+do
+	r_num=$(awk -v random=${RANDOM} 'BEGIN{print random % 8 +1}')
+	r_char="\$color_${r_num}"
+	r_color=$(eval "echo -e \"${r_char}\"")
+	echo -e "${r_color}${i}${RST}"
+	sleep 0.1
+done
+
+# print process info
 i=1
 while [ ${i} -lt 5 ]; do
 	for char in '/' '.' '\'
 	do
-		echo -n "                                  [${char}]                                    "
+		echo -n "                                    [${char}]                                      "
 		echo -ne "\r\r"
 		sleep 0.2
 	done
@@ -63,9 +103,11 @@ while [ ${i} -lt 5 ]; do
 done
 echo -e "\n"
 sleep 0.3
+}
+print_app_info
 
 #===========================================================================================================================================
-#==================                                 an zhuang yi lai ruan jian function                          ===========================
+#=====================                              an zhuang yi lai ruan jian function                          ===========================
 #===========================================================================================================================================
 install_dependent_software() {
 apt update
@@ -144,7 +186,7 @@ sleep 5
 clear
 
 #===========================================================================================================================================
-#====================                                      xuan zhe gon ji tool function                             =======================
+#==========================                                       xuan zhe gon ji tool                             =========================
 #===========================================================================================================================================
 handshake_tool_menu() {
 echo -e "\033[33mSelect one tool what you want to use\033[0m"
