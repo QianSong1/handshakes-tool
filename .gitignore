@@ -1,0 +1,4 @@
+# ignore temp dirs
+result
+temp_aireplay
+temp_mdk

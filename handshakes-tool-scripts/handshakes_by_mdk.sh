@@ -184,22 +184,109 @@ sleep 2
 #====================                                   xian shi sao miao jie guo function                         =========================
 #===========================================================================================================================================
 display_result_info() {
-server_list_total=$(cat ${work_dir}/server_list.csv|egrep --text -v "SSID,"|egrep --text -v "^$"|wc -l)
+server_list_total=$(cat ${work_dir}/server_list.csv|egrep --text -v "^$"|sed -r '1d'|awk -F "," '{if (length($1) >= 17) {print $0}}'|wc -l)
 if [ ${server_list_total} -gt 0 ]; then
-	IFS=$'\n'
-	a=1
-	for i in $(cat ${work_dir}/server_list.csv|egrep --text -v "SSID,"|egrep --text -v "^$")
-	do
-		temp_mac=$(echo ${i}|awk -F "," '{print $1}')
-		cat ${work_dir}/client.txt|grep --text ${temp_mac} >/dev/null 2>&1
-		client_stat=$?
-		if [ "${client_stat}" == "0" ]; then
-			echo -e "\033[33m[$a]\033[0m \033[32m$i\033[0m"
-		else
-			echo -e "\033[33m[$a]\033[0m $i"
+	echo -e "\033[32m 序号         BSSID        信道     信号强度     加密方式      ESSID\033[0m"
+	local i=0
+	local valid_channels_24_and_5_ghz_regexp="[0-9]{1,3}"
+	while IFS=, read -r exp_mac _ _ exp_channel _ exp_enc _ exp_auth exp_power _ _ _ exp_idlength exp_essid _; do
+
+		chars_mac=${#exp_mac}
+		if [ "${chars_mac}" -ge 17 ]; then
+			i=$((i + 1))
+			if [ "${exp_power}" -lt 0 ]; then
+				if [ "${exp_power}" -eq -1 ]; then
+					exp_power=0
+				else
+					exp_power=$((exp_power + 100))
+				fi
+			fi
+
+			exp_power=$(echo "${exp_power}" | awk '{gsub(/ /,""); print}')
+			exp_essid=${exp_essid:1:${exp_idlength}}
+
+			if [[ ${exp_channel} =~ ${valid_channels_24_and_5_ghz_regexp} ]]; then
+				exp_channel=$(echo "${exp_channel}" | awk '{gsub(/ /,""); print}')
+			else
+				exp_channel=0
+			fi
+
+			exp_enc=$(echo "${exp_enc}" | awk '{print $1}')
+
+			if [ "${i}" -le 9 ]; then
+				sp1="  "
+			elif [[ "${i}" -ge 10 ]] && [[ "${i}" -le 99 ]]; then
+				sp1=" "
+			else
+				sp1=""
+			fi
+
+			if [ "${exp_channel}" -le 9 ]; then
+				sp2="  "
+				if [ "${exp_channel}" -eq 0 ]; then
+					exp_channel="-1"
+				fi
+				if [ "${exp_channel}" -lt 0 ]; then
+					sp2=" "
+				fi
+			elif [[ "${exp_channel}" -ge 10 ]] && [[ "${exp_channel}" -lt 99 ]]; then
+				sp2=" "
+			else
+				sp2=""
+			fi
+
+			if [[ "${exp_essid}" = "" ]] || [[ "${exp_channel}" = "-1" ]]; then
+				exp_essid="(Hidden Network)"
+			fi
+
+			if [ "${exp_power}" = "" ]; then
+				exp_power=0
+			fi
+
+			if [ "${exp_power}" -le 9 ]; then
+				sp4=" "
+			else
+				sp4=""
+			fi
+
+			airodump_color="\033[37m"
+			normal_color="\033[0m"
+			client=$(grep "${exp_mac}" < "${work_dir}/client.txt")
+			if [ "${client}" != "" ]; then
+				airodump_color="\033[33m"
+				client="*"
+				sp5=""
+			else
+				sp5=" "
+			fi
+
+			enc_length=${#exp_enc}
+			if [ "${enc_length}" -gt 3 ]; then
+				sp6=""
+			elif [ "${enc_length}" -eq 0 ]; then
+				sp6="    "
+			else
+				sp6=" "
+			fi
+
+			echo -e "${airodump_color}${sp1}[${i}]${client}   ${sp5}${exp_mac}  ${sp2}${exp_channel}        ${sp4}${exp_power}%          ${exp_enc}${sp6}       ${exp_essid}${normal_color}"
 		fi
-		let a++
-	done
+	done < "${work_dir}/server_list.csv"
+
+	#IFS=$'\n'
+	#a=1
+	#for i in $(cat ${work_dir}/server_list.csv|egrep --text -v "^$"|sed -r '1d'|awk -F "," '{if (length($1) >= 17) {print $0}}')
+	#do
+	#	temp_mac=$(echo ${i}|awk -F "," '{print $1}')
+	#	cat ${work_dir}/client.txt|grep --text ${temp_mac} >/dev/null 2>&1
+	#	client_stat=$?
+	#	if [ "${client_stat}" == "0" ]; then
+	#		echo -e "\033[33m[$a]\033[0m \033[32m$i\033[0m"
+	#	else
+	#		echo -e "\033[33m[$a]\033[0m $i"
+	#	fi
+	#	let a++
+	#done
 else
 	echo -e "\033[31mNo network at the list, press [enter] to restart new hack\033[0m"
 	read -p ">" you_zl
@@ -248,7 +335,7 @@ do
 		display_result_info
 		echo -e "\033[33mAP_num must be a number and can not be null!!\033[0m"
 		read -p "Select one AP what you want to handshake [num]: " ap_num
-	elif [ ${ap_num} -gt $(cat ${work_dir}/server_list.csv|egrep --text -v "SSID,"|egrep --text -v "^$"|wc -l) ]; then
+	elif [ ${ap_num} -gt $(cat ${work_dir}/server_list.csv|egrep --text -v "^$"|sed -r '1d'|awk -F "," '{if (length($1) >= 17) {print $0}}'|wc -l) ]; then
 		clear
 		display_result_info
 		echo -e "\033[33mAP_num con't be great of total number for ap list!!\033[0m"
@@ -264,7 +351,7 @@ do
 done
 
 #ding yi mu biao  AP mac and xin dao
-target_mac=$(cat ${work_dir}/server_list.csv|egrep --text -v "SSID,"|egrep --text -v "^$"|awk -F "," "NR==${ap_num}"'{print $1}')
+target_mac=$(cat ${work_dir}/server_list.csv|egrep --text -v "^$"|sed -r '1d'|awk -F "," '{if (length($1) >= 17) {print $0}}'|awk -F "," "NR==${ap_num}"'{print $1}')
 if [ -z ${target_mac} ] || [ "${target_mac}" == "" ]; then
 	echo -e "\033[31mThe target ap mac is null ,now program is exit.\033[0m"
 	exit 8
