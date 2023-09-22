@@ -211,6 +211,10 @@ if [ ${server_list_total} -gt 0 ]; then
 				exp_channel=0
 			fi
 
+			if [[ "${exp_essid}" = "" ]] || [[ -z "${exp_essid}" ]]; then
+				exp_essid="(Hidden Network)"
+			fi
+
 			exp_enc=$(echo "${exp_enc}" | awk '{print $1}')
 
 			if [ "${i}" -le 9 ]; then
@@ -233,10 +237,6 @@ if [ ${server_list_total} -gt 0 ]; then
 				sp2=" "
 			else
 				sp2=""
-			fi
-
-			if [[ "${exp_essid}" = "" ]] || [[ "${exp_channel}" = "-1" ]]; then
-				exp_essid="(Hidden Network)"
 			fi
 
 			if [ "${exp_power}" = "" ]; then
