@@ -399,7 +399,10 @@ echo -e "\033[33m提示：当目标WiFi握手包出现了，请手动关掉抓�
 #guan bi gon ji xterm
 sleep 15
 echo -e "\033[32mClose the mdk attack xterm...\033[0m"
-cat ${work_dir}/mdk.pid|xargs -i kill {} >/dev/null 2>&1
+mom_pid=$(cat ${work_dir}/mdk.pid)
+child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+kill "${child_pid}" >/dev/null 2>&1
+kill "${mom_pid}" >/dev/null 2>&1
 target_pid=$(cat ${work_dir}/mdk.pid)
 pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)     
 ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
