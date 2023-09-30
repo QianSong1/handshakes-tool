@@ -141,15 +141,21 @@ do
 	sleep 2
 	xterm -geometry "107-0+0" -bg "#000000" -fg "#FFFFFF" -title "Scan all AP" -e airodump-ng ${wlan_card} --band $1 -w ${work_dir}/dump &
 	echo $! >${work_dir}/airodump-ng.pid
-	target_pid=$(cat ${work_dir}/airodump-ng.pid)
-        pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-        ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-        while [ ${pid_sum} -gt 0 ] || [ ${ppid_sum} -gt 0 ]
+	mom_pid=$(cat ${work_dir}/airodump-ng.pid)
+	child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+	mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+	while true
 	do
-		target_pid=$(cat ${work_dir}/airodump-ng.pid)
-	       	pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-	       	ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-		sleep 1
+		if [ ${mom_pid_sum} -gt 0 ]; then
+			mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+			sleep 1
+		else
+			for iterm in ${child_pid}
+			do
+				kill ${iterm} >/dev/null 2>&1
+			done
+			break
+		fi
 	done
 	sleep 2
 done
@@ -401,34 +407,43 @@ sleep 15
 echo -e "\033[32mClose the mdk attack xterm...\033[0m"
 mom_pid=$(cat ${work_dir}/mdk.pid)
 child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
-kill "${child_pid}" >/dev/null 2>&1
 kill "${mom_pid}" >/dev/null 2>&1
-target_pid=$(cat ${work_dir}/mdk.pid)
-pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)     
-ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-while [ ${pid_sum} -gt 0 ] || [ ${ppid_sum} -gt 0 ]
+mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+while true
 do
-	target_pid=$(cat ${work_dir}/mdk.pid)
-	pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)     
-	ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-	sleep 1
+	if [ ${mom_pid_sum} -gt 0 ]; then
+		mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+		sleep 1
+	else
+		for iterm in ${child_pid}
+		do
+			kill ${iterm} >/dev/null 2>&1
+		done
+		break
+	fi
 done
 sleep 2
 
 #guan bi handshake pid de jian ting program
 i=1
-target_pid=$(cat ${work_dir}/airodump-ng.pid)
-pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)     
-ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-while [ ${pid_sum} -gt 0 ] || [ ${ppid_sum} -gt 0 ]
+mom_pid=$(cat ${work_dir}/airodump-ng.pid)
+child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+while true
 do
-	target_pid=$(cat ${work_dir}/airodump-ng.pid)
-	pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-	ppid_sum=$(ps -ef|awk "NR>1"'{print $3}'|egrep "^${target_pid}$"|grep -v "grep"|wc -l)
-	echo -n "Now ${i} seconds has passd.."
-	echo -ne "\r\r"
-	sleep 1
-	let i+=1
+	if [ ${mom_pid_sum} -gt 0 ]; then
+		mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
+		echo -n "Now ${i} seconds has passd.."
+		echo -ne "\r\r"
+		sleep 1
+		let i+=1
+	else
+		for iterm in ${child_pid}
+		do
+			kill ${iterm} >/dev/null 2>&1
+		done
+		break
+	fi
 done
 sleep 2
 }
