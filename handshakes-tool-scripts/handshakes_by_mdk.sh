@@ -142,7 +142,7 @@ do
 	xterm -geometry "107-0+0" -bg "#000000" -fg "#FFFFFF" -title "Scan all AP" -e airodump-ng ${wlan_card} --band $1 -w ${work_dir}/dump &
 	echo $! >${work_dir}/airodump-ng.pid
 	mom_pid=$(cat ${work_dir}/airodump-ng.pid)
-	child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+	child_pid=$(get_treepid ${mom_pid}|awk '{for(i = 1; i <= NF; i++) printf("%s%s", $i,"\n")}')
 	mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
 	while true
 	do
@@ -406,7 +406,7 @@ echo -e "\033[33m提示：当目标WiFi握手包出现了，请手动关掉抓�
 sleep 15
 echo -e "\033[32mClose the mdk attack xterm...\033[0m"
 mom_pid=$(cat ${work_dir}/mdk.pid)
-child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+child_pid=$(get_treepid ${mom_pid}|awk '{for(i = 1; i <= NF; i++) printf("%s%s", $i,"\n")}')
 kill "${mom_pid}" >/dev/null 2>&1
 mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
 while true
@@ -427,7 +427,7 @@ sleep 2
 #guan bi handshake pid de jian ting program
 i=1
 mom_pid=$(cat ${work_dir}/airodump-ng.pid)
-child_pid=$(ps -ef|awk -v mom_pid=${mom_pid} "NR>1"'{if ($3 == mom_pid) {print $2}}'|awk '{printf("%s ", $0)} END {printf("\n")}')
+child_pid=$(get_treepid ${mom_pid}|awk '{for(i = 1; i <= NF; i++) printf("%s%s", $i,"\n")}')
 mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
 while true
 do

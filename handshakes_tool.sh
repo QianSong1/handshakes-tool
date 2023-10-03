@@ -186,6 +186,64 @@ sleep 5
 clear
 
 #===========================================================================================================================================
+#==========================                             find target PID's all sons grandsons .etc                  =========================
+#===========================================================================================================================================
+function get_treepid() {
+
+	local pid sep opts
+	opts=$(getopt -q -o s:,p: -l sep:,pid: -- "$@") || return 1
+	eval set -- "$opts"
+	while [[ true ]]; do
+		case $1 in
+			-s|--sep )
+				sep=$2
+				shift 2
+				;;
+			-p|--pid )
+				pid=$2
+				shift 2
+				;;
+			-- )
+				shift
+				break
+				;;
+			* )
+				echo "Invalid usage" >&2
+				return 1
+				;;
+		esac
+	done
+
+	sep=${sep:-' '}
+	pid=${pid:-$1}
+	if ! [[ $pid ]]; then
+		return 1
+	fi
+
+	ps -eo ppid,pid --no-headers | awk -v root="$pid" -v sep="$sep" '
+		function dfs(u) {
+			if (pids)
+				pids = pids sep u;
+			else
+				pids = u;
+			if (u in edges)
+				for (v in edges[u])
+				dfs(v);
+		}
+		{
+			edges[$1][$2] = 1;
+			if ($2 == root)
+				root_isalive = 1;
+		}
+		END {
+			if (root_isalive)
+				dfs(root);
+			if (pids)
+				print pids;
+		}'
+}
+
+#===========================================================================================================================================
 #==========================                                       xuan zhe gon ji tool                             =========================
 #===========================================================================================================================================
 handshake_tool_menu() {
