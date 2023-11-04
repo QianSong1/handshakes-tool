@@ -141,6 +141,7 @@ do
 	sleep 2
 	xterm -geometry "107-0+0" -bg "#000000" -fg "#FFFFFF" -title "Scan all AP" -e airodump-ng ${wlan_card} --band $1 -w ${work_dir}/dump &
 	echo $! >${work_dir}/airodump-ng.pid
+	sleep 2
 	mom_pid=$(cat ${work_dir}/airodump-ng.pid)
 	child_pid=$(get_treepid ${mom_pid}|awk '{for(i = 1; i <= NF; i++) printf("%s%s", $i,"\n")}')
 	mom_pid_sum=$(ps -ef|awk "NR>1"'{print $2}'|egrep "^${mom_pid}$"|grep -v "grep"|wc -l)
@@ -396,6 +397,7 @@ fi
 iw dev ${wlan_card} set channel ${cur_channel} >/dev/null 2>&1
 xterm -geometry "85+0+0" -bg "#000000" -fg "#FF0009" -title "Duan kai conn on ${target_mac}" -e aireplay-ng -0 0 -a ${target_mac} --ignore-negative-one ${wlan_card} &
 echo $! >${work_dir}/aireplay-ng.pid
+sleep 2
 
 #shu chu cao zuo ti shi info
 echo -e "\n"
