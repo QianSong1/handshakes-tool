@@ -11,7 +11,7 @@
 #********************************************************************
 
 #ding yi source dir var
-source_dir=$(dirname $(realpath $0))/handshakes-tool-scripts
+source_dir="$(dirname "$(realpath "$0")")/handshakes-tool-scripts"
 
 #pan duan shi fou root yon hu yun xing
 if [ "${UID}" != "0" ]; then
@@ -83,23 +83,23 @@ ${color_2}▞▀▖▀▛▘▀▛▘▞▀▖▞▀▖▌ ▌▛▀▘▛▀▖
 IFS=$'\n'
 for i in $(logo)
 do
-	r_num=$(awk -v random=${RANDOM} 'BEGIN{print random % 8 +1}')
+	r_num="$(awk -v random="${RANDOM}" 'BEGIN{print random % 8 +1}')"
 	r_char="\$color_${r_num}"
-	r_color=$(eval "echo -e \"${r_char}\"")
+	r_color="$(eval "echo \"${r_char}\"")"
 	echo -e "${r_color}${i}${RST}"
 	sleep 0.1
 done
 
 # print process info
 i=1
-while [ ${i} -lt 5 ]; do
-	for char in '/' '.' '\'
+while [ "${i}" -lt 5 ]; do
+	for char in "/" "." "\\"
 	do
 		echo -n "                                    [${char}]                                      "
 		echo -ne "\r\r"
 		sleep 0.2
 	done
-	let i++
+	i=$(( i + 1 ))
 done
 echo -e "\n"
 sleep 0.3
@@ -115,7 +115,7 @@ if [ $? -ne 0 ]; then
 	echo -e "\033[31mnetwork error\033[0m"
 	exit 2
 fi
-apt install $1 -y
+apt install "$1" -y
 if [ $? -ne 0 ]; then
 	echo -e "\033[31mnetwork error\033[0m"
 	exit 3
@@ -125,13 +125,13 @@ fi
 #pan  duan  shi  fou  an zhuang  le  yi  lai  ruan  jian
 for i in mdk3 mdk4 airmon-ng airodump-ng xterm dos2unix cowpatty aireplay-ng macchanger
 do
-	type ${i} >/dev/null 2>&1
+	type "${i}" >/dev/null 2>&1
 	exit_code=$?
-	if [ ${exit_code} -eq 0 ]; then
+	if [ "${exit_code}" -eq 0 ]; then
 		echo -e "${i}.....................\033[32mOK\033[0m"
 	else
 		echo -e "${i}.....................\033[33mInstalling\033[0m"
-		case ${i} in
+		case "${i}" in
 			mdk3)
 				install_dependent_software mdk3
 				;;
@@ -191,20 +191,20 @@ clear
 function get_treepid() {
 
 	local pid sep opts
-	opts=$(getopt -q -o s:,p: -l sep:,pid: -- "$@") || return 1
-	eval set -- "$opts"
-	while [[ true ]]; do
-		case $1 in
+	opts="$(getopt -q -o s:,p: -l sep:,pid: -- "$@")" || return 1
+	eval set -- "${opts}"
+	while true; do
+		case "$1" in
 			-s|--sep )
-				sep=$2
+				sep="$2"
 				shift 2
 				;;
 			-p|--pid )
-				pid=$2
+				pid="$2"
 				shift 2
 				;;
 			-- )
-				shift
+				shift 1
 				break
 				;;
 			* )
@@ -214,13 +214,13 @@ function get_treepid() {
 		esac
 	done
 
-	sep=${sep:-' '}
-	pid=${pid:-$1}
-	if ! [[ $pid ]]; then
+	sep="${sep:- }"
+	pid="${pid:-$1}"
+	if [[ -z "${pid}" ]]; then
 		return 1
 	fi
 
-	ps -eo ppid,pid --no-headers | awk -v root="$pid" -v sep="$sep" '
+	ps -eo ppid,pid --no-headers | awk -v root="${pid}" -v sep="${sep}" '
 		function dfs(u) {
 			if (pids)
 				pids = pids sep u;
@@ -252,15 +252,15 @@ echo -e "\033[36m************************************\033[0m"
 echo -e "\033[32m1.        mdk-tool(推荐)\033[0m           \033[36m*\033[0m"
 echo -e "\033[32m2.        aireplay-tool(备选)\033[0m      \033[36m*\033[0m"
 echo -e "\033[36m************************************\033[0m"
-read -p "Please select: " handshake_tool
-case ${handshake_tool} in
+read -rp "Please select: " handshake_tool
+case "${handshake_tool}" in
 	1)
 		clear
-		source ${source_dir}/handshakes_by_mdk.sh
+		source "${source_dir}/handshakes_by_mdk.sh"
 		;;
 	2)
 		clear
-		source ${source_dir}/handshakes_by_aireplay.sh
+		source "${source_dir}/handshakes_by_aireplay.sh"
 		;;
 	*)
 		clear
